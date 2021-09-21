@@ -1,0 +1,1234 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "jira"
+    },
+    "paths": {
+        "/rest/api/2/project": {
+            "get": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Get all projects",
+                "description": "Returns all projects visible to the user. Deprecated, use [ Get projects paginated](#api-rest-api-2-project-search-get) that supports search and pagination.\n\nThis operation can be accessed anonymously.\n\n**[Permissions](#permissions) required:** Projects are returned only where the user has *Browse Projects* or *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.",
+                "operationId": "getAllProjects",
+                "parameters": [
+                    {
+                        "name": "expand",
+                        "in": "query",
+                        "description": "Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Expanded options include:\n\n *  `description` Returns the project description.\n *  `issueTypes` Returns all issue types associated with the project.\n *  `lead` Returns information about the project lead.\n *  `projectKeys` Returns all project keys associated with the project.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "recent",
+                        "in": "query",
+                        "description": "Returns the user's most recently accessed projects. You may specify the number of results to return up to a maximum of 20. If access is anonymous, then the recently accessed projects are based on the current HTTP session.",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "properties",
+                        "in": "query",
+                        "description": "A list of project properties to return for the project. This parameter accepts a comma-separated list.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returned if the request is successful.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Project"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Returned if the authentication credentials are incorrect or missing."
+                    }
+                },
+                "deprecated": true,
+                "security": [
+                    {
+                        "basicAuth": []
+                    },
+                    {
+                        "OAuth2": [
+                            "read:jira-work"
+                        ]
+                    },
+                    {}
+                ],
+                "x-changes": [
+                    {
+                        "type": "removed",
+                        "announced": "2018-10-19",
+                        "effective": "2019-04-19",
+                        "details": "https://developer.atlassian.com/cloud/jira/platform/deprecation-notice-removal-of-get-filters-and-get-all-projects/"
+                    }
+                ],
+                "x-atlassian-connect-scope": "READ"
+            },
+            "post": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Create project",
+                "description": "Creates a project based on a project type template, as shown in the following table:\n\n| Project Type Key | Project Template Key |  \n|--|--|  \n| `business` | `com.atlassian.jira-core-project-templates:jira-core-simplified-content-management`, `com.atlassian.jira-core-project-templates:jira-core-simplified-document-approval`, `com.atlassian.jira-core-project-templates:jira-core-simplified-lead-tracking`, `com.atlassian.jira-core-project-templates:jira-core-simplified-process-control`, `com.atlassian.jira-core-project-templates:jira-core-simplified-procurement`, `com.atlassian.jira-core-project-templates:jira-core-simplified-project-management`, `com.atlassian.jira-core-project-templates:jira-core-simplified-recruitment`, `com.atlassian.jira-core-project-templates:jira-core-simplified-task-tracking` |  \n| `service_desk` | `com.atlassian.servicedesk:simplified-it-service-management`, `com.atlassian.servicedesk:simplified-general-service-desk`, `com.atlassian.servicedesk:simplified-internal-service-desk`, `com.atlassian.servicedesk:simplified-external-service-desk`, `com.atlassian.servicedesk:simplified-hr-service-desk`, `com.atlassian.servicedesk:simplified-facilities-service-desk`, `com.atlassian.servicedesk:simplified-legal-service-desk` |  \n| `software` | `com.pyxis.greenhopper.jira:gh-simplified-agility-kanban`, `com.pyxis.greenhopper.jira:gh-simplified-agility-scrum`, `com.pyxis.greenhopper.jira:gh-simplified-basic`, `com.pyxis.greenhopper.jira:gh-simplified-kanban-classic`, `com.pyxis.greenhopper.jira:gh-simplified-scrum-classic` |  \nThe project types are available according to the installed Jira features as follows:\n\n *  Jira Core, the default, enables `business` projects.\n *  Jira Service Management enables `service_desk` projects.\n *  Jira Software enables `software` projects.\n\nTo determine which features are installed, go to **Jira settings** > **Apps** > **Manage apps** and review the System Apps list. To add Jira Software or Jira Service Management into a JIRA instance, use **Jira settings** > **Apps** > **Finding new apps**. For more information, see [ Managing add-ons](https://confluence.atlassian.com/x/S31NLg).\n\n**[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).",
+                "operationId": "createProject",
+                "parameters": [],
+                "requestBody": {
+                    "description": "The JSON representation of the project being created.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateProjectDetails"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Returned if the project is created.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProjectIdentifiers"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Returned if the request is not valid and the project could not be created."
+                    },
+                    "401": {
+                        "description": "Returned if the authentication credentials are incorrect or missing."
+                    },
+                    "403": {
+                        "description": "Returned if the user does not have permission to create projects."
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "basicAuth": []
+                    },
+                    {
+                        "OAuth2": [
+                            "manage:jira-configuration"
+                        ]
+                    },
+                    {}
+                ],
+                "x-atlassian-connect-scope": "PROJECT_ADMIN"
+            }
+        },
+        "/rest/api/2/issue": {
+            "post": {
+                "tags": [
+                    "Issues"
+                ],
+                "summary": "Create issue",
+                "description": "Creates an issue or, where the option to create subtasks is enabled in Jira, a subtask. A transition may be applied, to move the issue or subtask to a workflow step other than the default start step, and issue properties set.\n\nThe content of the issue or subtask is defined using `update` and `fields`. The fields that can be set in the issue or subtask are determined using the [ Get create issue metadata](#api-rest-api-2-issue-createmeta-get). These are the same fields that appear on the issue's create screen.\n\nCreating a subtask differs from creating an issue as follows:\n\n *  `issueType` must be set to a subtask issue type (use [ Get create issue metadata](#api-rest-api-2-issue-createmeta-get) to find subtask issue types).\n *  `parent` must contain the ID or key of the parent issue.\n\n**[Permissions](#permissions) required:** *Browse projects* and *Create issues* [project permissions](https://confluence.atlassian.com/x/yodKLg) for the project in which the issue or subtask is created.",
+                "operationId": "createIssue",
+                "parameters": [
+                    {
+                        "name": "updateHistory",
+                        "in": "query",
+                        "description": "Whether the project in which the issue is created is added to the user's **Recently viewed** project list, as shown under **Projects** in Jira. When provided, the issue type and request type are added to the user's history for a project. These values are then used to provide defaults on the issue create screen.",
+                        "schema": {
+                            "type": "boolean",
+                            "default": false
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/IssueUpdateDetails"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Returned if the request is successful.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CreatedIssue"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Returned if the request:\n\n *  is missing required fields.\n *  contains invalid field values.\n *  contains fields that cannot be set for the issue type.\n *  is by a user who does not have the necessary permission.\n *  is to create a subtype in a project different that of the parent issue.\n *  is for a subtask when the option to create subtasks is disabled.\n *  is invalid for any other reason.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorCollection"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Returned if the authentication credentials are incorrect or missing.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorCollection"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Returned if the user does not have the necessary permission.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorCollection"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "basicAuth": []
+                    },
+                    {
+                        "OAuth2": [
+                            "write:jira-work"
+                        ]
+                    },
+                    {}
+                ],
+                "x-atlassian-connect-scope": "WRITE"
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "CreateProjectDetails": {
+                "required": [
+                    "key",
+                    "name"
+                ],
+                "type": "object",
+                "properties": {
+                    "key": {
+                        "type": "string",
+                        "description": "Project keys must be unique and start with an uppercase letter followed by one or more uppercase alphanumeric characters. The maximum length is 10 characters."
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "The name of the project."
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "A brief description of the project."
+                    },
+                    "lead": {
+                        "type": "string",
+                        "description": "This parameter is deprecated because of privacy changes. Use `leadAccountId` instead. See the [migration guide](https://developer.atlassian.com/cloud/jira/platform/deprecation-notice-user-privacy-api-migration-guide/) for details. The user name of the project lead. Either `lead` or `leadAccountId` must be set when creating a project. Cannot be provided with `leadAccountId`."
+                    },
+                    "leadAccountId": {
+                        "maxLength": 128,
+                        "type": "string",
+                        "description": "The account ID of the project lead. Either `lead` or `leadAccountId` must be set when creating a project. Cannot be provided with `lead`."
+                    },
+                    "url": {
+                        "type": "string",
+                        "description": "A link to information about this project, such as project documentation"
+                    },
+                    "assigneeType": {
+                        "type": "string",
+                        "description": "The default assignee when creating issues for this project.",
+                        "enum": [
+                            "PROJECT_LEAD",
+                            "UNASSIGNED"
+                        ]
+                    },
+                    "avatarId": {
+                        "type": "integer",
+                        "description": "An integer value for the project's avatar.",
+                        "format": "int64"
+                    },
+                    "issueSecurityScheme": {
+                        "type": "integer",
+                        "description": "The ID of the issue security scheme for the project, which enables you to control who can and cannot view issues. Use the [Get issue security schemes](#api-rest-api-2-issuesecurityschemes-get) resource to get all issue security scheme IDs.",
+                        "format": "int64"
+                    },
+                    "permissionScheme": {
+                        "type": "integer",
+                        "description": "The ID of the permission scheme for the project. Use the [Get all permission schemes](#api-rest-api-2-permissionscheme-get) resource to see a list of all permission scheme IDs.",
+                        "format": "int64"
+                    },
+                    "notificationScheme": {
+                        "type": "integer",
+                        "description": "The ID of the notification scheme for the project. Use the [Get notification schemes](#api-rest-api-2-notificationscheme-get) resource to get a list of notification scheme IDs.",
+                        "format": "int64"
+                    },
+                    "categoryId": {
+                        "type": "integer",
+                        "description": "The ID of the project's category. A complete list of category IDs is found using the [Get all project categories](#api-rest-api-2-projectCategory-get) operation.",
+                        "format": "int64"
+                    },
+                    "projectTypeKey": {
+                        "type": "string",
+                        "description": "The [project type](https://confluence.atlassian.com/x/GwiiLQ#Jiraapplicationsoverview-Productfeaturesandprojecttypes), which defines the application-specific feature set. If you don't specify the project template you have to specify the project type.",
+                        "enum": [
+                            "software",
+                            "service_desk",
+                            "business"
+                        ]
+                    },
+                    "projectTemplateKey": {
+                        "type": "string",
+                        "description": "A predefined configuration for a project. The type of the `projectTemplateKey` must match with the type of the `projectTypeKey`.",
+                        "enum": [
+                            "com.pyxis.greenhopper.jira:gh-simplified-agility-kanban",
+                            "com.pyxis.greenhopper.jira:gh-simplified-agility-scrum",
+                            "com.pyxis.greenhopper.jira:gh-simplified-basic",
+                            "com.pyxis.greenhopper.jira:gh-simplified-kanban-classic",
+                            "com.pyxis.greenhopper.jira:gh-simplified-scrum-classic",
+                            "com.atlassian.servicedesk:simplified-it-service-management",
+                            "com.atlassian.servicedesk:simplified-general-service-desk",
+                            "com.atlassian.servicedesk:simplified-internal-service-desk",
+                            "com.atlassian.servicedesk:simplified-external-service-desk",
+                            "com.atlassian.servicedesk:simplified-hr-service-desk",
+                            "com.atlassian.servicedesk:simplified-facilities-service-desk",
+                            "com.atlassian.servicedesk:simplified-legal-service-desk",
+                            "com.atlassian.jira-core-project-templates:jira-core-simplified-content-management",
+                            "com.atlassian.jira-core-project-templates:jira-core-simplified-document-approval",
+                            "com.atlassian.jira-core-project-templates:jira-core-simplified-lead-tracking",
+                            "com.atlassian.jira-core-project-templates:jira-core-simplified-process-control",
+                            "com.atlassian.jira-core-project-templates:jira-core-simplified-procurement",
+                            "com.atlassian.jira-core-project-templates:jira-core-simplified-project-management",
+                            "com.atlassian.jira-core-project-templates:jira-core-simplified-recruitment",
+                            "com.atlassian.jira-core-project-templates:jira-core-simplified-task-"
+                        ]
+                    },
+                    "workflowScheme": {
+                        "type": "integer",
+                        "description": "The ID of the workflow scheme for the project. Use the [Get all workflow schemes](#api-rest-api-2-workflowscheme-get) operation to get a list of workflow scheme IDs. If you specify the workflow scheme you cannot specify the project template key.",
+                        "format": "int64"
+                    },
+                    "issueTypeScreenScheme": {
+                        "type": "integer",
+                        "description": "The ID of the issue type screen scheme for the project. Use the [Get all issue type screen schemes](#api-rest-api-2-issuetypescreenscheme-get) operation to get a list of issue type screen scheme IDs. If you specify the issue type screen scheme you cannot specify the project template key.",
+                        "format": "int64"
+                    },
+                    "issueTypeScheme": {
+                        "type": "integer",
+                        "description": "The ID of the issue type scheme for the project. Use the [Get all issue type schemes](#api-rest-api-2-issuetypescheme-get) operation to get a list of issue type scheme IDs. If you specify the issue type scheme you cannot specify the project template key.",
+                        "format": "int64"
+                    },
+                    "fieldConfigurationScheme": {
+                        "type": "integer",
+                        "description": "The ID of the field configuration scheme for the project. Use the [Get all field configuration schemes](#api-rest-api-2-fieldconfigurationscheme-get) operation to get a list of field configuration scheme IDs. If you specify the field configuration scheme you cannot specify the project template key.",
+                        "format": "int64"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Details about the project."
+            },
+            "ProjectIdentifiers": {
+                "required": [
+                    "id",
+                    "key",
+                    "self"
+                ],
+                "type": "object",
+                "properties": {
+                    "self": {
+                        "type": "string",
+                        "description": "The URL of the created project.",
+                        "format": "uri",
+                        "readOnly": true
+                    },
+                    "id": {
+                        "type": "integer",
+                        "description": "The ID of the created project.",
+                        "format": "int64",
+                        "readOnly": true
+                    },
+                    "key": {
+                        "type": "string",
+                        "description": "The key of the created project.",
+                        "readOnly": true
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Identifiers for a project."
+            },
+            "Project": {
+                "type": "object",
+                "properties": {
+                    "expand": {
+                        "type": "string",
+                        "description": "Expand options that include additional project details in the response.",
+                        "readOnly": true,
+                        "xml": {
+                            "attribute": true
+                        }
+                    },
+                    "self": {
+                        "type": "string",
+                        "description": "The URL of the project details.",
+                        "format": "uri",
+                        "readOnly": true
+                    },
+                    "id": {
+                        "type": "string",
+                        "description": "The ID of the project."
+                    },
+                    "key": {
+                        "type": "string",
+                        "description": "The key of the project.",
+                        "readOnly": true
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "A brief description of the project.",
+                        "readOnly": true
+                    },
+                    "lead": {
+                        "description": "The username of the project lead.",
+                        "readOnly": true,
+                        "allOf": [
+                            {
+                                "type": "object"
+                            }
+                        ]
+                    },
+                    "components": {
+                        "type": "array",
+                        "description": "List of the components contained in the project.",
+                        "readOnly": true,
+                        "items": {
+                            "type": "object"
+                        }
+                    },
+                    "issueTypes": {
+                        "type": "array",
+                        "description": "List of the issue types available in the project.",
+                        "readOnly": true,
+                        "items": {
+                            "type": "object"
+                        }
+                    },
+                    "url": {
+                        "type": "string",
+                        "description": "A link to information about this project, such as project documentation.",
+                        "readOnly": true
+                    },
+                    "email": {
+                        "type": "string",
+                        "description": "An email address associated with the project."
+                    },
+                    "assigneeType": {
+                        "type": "string",
+                        "description": "The default assignee when creating issues for this project.",
+                        "readOnly": true,
+                        "enum": [
+                            "PROJECT_LEAD",
+                            "UNASSIGNED"
+                        ]
+                    },
+                    "versions": {
+                        "type": "array",
+                        "description": "The versions defined in the project. For more information, see [Create version](#api-rest-api-2-version-post).",
+                        "readOnly": true,
+                        "items": {
+                            "type": "object"
+                        }
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "The name of the project.",
+                        "readOnly": true
+                    },
+                    "roles": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string",
+                            "format": "uri",
+                            "readOnly": true
+                        },
+                        "description": "The name and self URL for each role defined in the project. For more information, see [Create project role](#api-rest-api-2-role-post).",
+                        "readOnly": true
+                    },
+                    "avatarUrls": {
+                        "description": "The URLs of the project's avatars.",
+                        "readOnly": true,
+                        "allOf": [
+                            {
+                                "type": "object"
+                            }
+                        ]
+                    },
+                    "projectCategory": {
+                        "description": "The category the project belongs to.",
+                        "readOnly": true,
+                        "allOf": [
+                            {
+                                "type": "object"
+                            }
+                        ]
+                    },
+                    "projectTypeKey": {
+                        "type": "string",
+                        "description": "The [project type](https://confluence.atlassian.com/x/GwiiLQ#Jiraapplicationsoverview-Productfeaturesandprojecttypes) of the project.",
+                        "readOnly": true,
+                        "enum": [
+                            "software",
+                            "service_desk",
+                            "business"
+                        ]
+                    },
+                    "simplified": {
+                        "type": "boolean",
+                        "description": "Whether the project is simplified.",
+                        "readOnly": true
+                    },
+                    "style": {
+                        "type": "string",
+                        "description": "The type of the project.",
+                        "readOnly": true,
+                        "enum": [
+                            "classic",
+                            "next-gen"
+                        ]
+                    },
+                    "favourite": {
+                        "type": "boolean",
+                        "description": "Whether the project is selected as a favorite."
+                    },
+                    "isPrivate": {
+                        "type": "boolean",
+                        "description": "Whether the project is private.",
+                        "readOnly": true
+                    },
+                    "issueTypeHierarchy": {
+                        "description": "The issue type hierarchy for the project.",
+                        "readOnly": true,
+                        "allOf": [
+                            {
+                                "type": "object"
+                            }
+                        ]
+                    },
+                    "permissions": {
+                        "description": "User permissions on the project",
+                        "readOnly": true,
+                        "allOf": [
+                            {
+                                "type": "object"
+                            }
+                        ]
+                    },
+                    "properties": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "readOnly": true
+                        },
+                        "description": "Map of project properties",
+                        "readOnly": true
+                    },
+                    "uuid": {
+                        "type": "string",
+                        "description": "Unique ID for next-gen projects.",
+                        "format": "uuid",
+                        "readOnly": true
+                    },
+                    "insight": {
+                        "description": "Insights about the project.",
+                        "readOnly": true,
+                        "allOf": [
+                            {
+                                "type": "object"
+                            }
+                        ]
+                    },
+                    "deleted": {
+                        "type": "boolean",
+                        "description": "Whether the project is marked as deleted.",
+                        "readOnly": true
+                    },
+                    "retentionTillDate": {
+                        "type": "string",
+                        "description": "The date when the project is deleted permanently.",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "deletedDate": {
+                        "type": "string",
+                        "description": "The date when the project was marked as deleted.",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "deletedBy": {
+                        "description": "The user who marked the project as deleted.",
+                        "readOnly": true,
+                        "allOf": [
+                            {
+                                "type": "object"
+                            }
+                        ]
+                    },
+                    "archived": {
+                        "type": "boolean",
+                        "description": "Whether the project is archived.",
+                        "readOnly": true
+                    },
+                    "archivedDate": {
+                        "type": "string",
+                        "description": "The date when the project was archived.",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "archivedBy": {
+                        "description": "The user who archived the project.",
+                        "readOnly": true,
+                        "allOf": [
+                            {
+                                "type": "object"
+                            }
+                        ]
+                    },
+                    "landingPageInfo": {
+                        "description": "The project landing page info.",
+                        "readOnly": true,
+                        "allOf": [
+                            {
+                                "type": "object"
+                            }
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Details about a project.",
+                "xml": {
+                    "name": "project"
+                }
+            },
+            "CreatedIssue": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "The ID of the created issue or subtask.",
+                        "readOnly": true
+                    },
+                    "key": {
+                        "type": "string",
+                        "description": "The key of the created issue or subtask.",
+                        "readOnly": true
+                    },
+                    "self": {
+                        "type": "string",
+                        "description": "The URL of the created issue or subtask.",
+                        "readOnly": true
+                    },
+                    "transition": {
+                        "description": "The response code and messages related to any requested transition.",
+                        "readOnly": true,
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/NestedResponse"
+                            }
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Details about a created issue or subtask."
+            },
+            "NestedResponse": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "errorCollection": {
+                        "$ref": "#/components/schemas/ErrorCollection"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "IssueUpdateDetails": {
+                "type": "object",
+                "properties": {
+                    "transition": {
+                        "description": "Details of a transition. Required when performing a transition, optional when creating or editing an issue.",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/IssueTransition"
+                            }
+                        ]
+                    },
+                    "fields": {
+                        "type": "object",
+                        "additionalProperties": {},
+                        "description": "List of issue screen fields to update, specifying the sub-field to update and its value for each field. This field provides a straightforward option when setting a sub-field. When multiple sub-fields or other operations are required, use `update`. Fields included in here cannot be included in `update`.",
+                        "properties": {
+                            "summary": {
+                                "type": "string"
+                            },
+                            "issuetype": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string"
+                                  }
+                                }
+                            },
+                            "project": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string"
+                                  }
+                                }
+                            },
+                            "customfield_15262": {
+                              "type": "string"
+                            },
+                            "customfield_15263": {
+                              "type": "string"
+                            },
+                            "customfield_15265": {
+                              "type": "string"
+                            },
+                            "customfield_15269": {
+                              "type": "string"
+                            },
+                            "customfield_15264": {
+                              "type": "string"
+                            },
+                            "customfield_15266": {
+                              "type": "string"
+                            },
+                            "customfield_15267": {
+                              "type": "string"
+                            },
+                            "customfield_15268": {
+                              "type": "string"
+                            },
+                            "customfield_15270": {
+                              "type": "string"
+                            },
+                            "customfield_15271": {
+                              "type": "string"
+                            },
+                            "customfield_15272": {
+                              "type": "string"
+                            },
+                            "customfield_15273": {
+                              "type": "string"
+                            },
+                            "customfield_15274": {
+                              "type": "string"
+                            },
+                            "customfield_15275": {
+                              "type": "string"
+                            },
+                            "customfield_15276": {
+                              "type": "string"
+                            },
+                            "customfield_15277": {
+                              "type": "string"
+                            },
+                            "customfield_15278": {
+                              "type": "string"
+                            },
+                            "customfield_15279": {
+                              "type": "string"
+                            },
+                            "customfield_15280": {
+                              "type": "string"
+                            },
+                            "customfield_15281": {
+                              "type": "string"
+                            }
+                        }
+                    },
+                    "update": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/components/schemas/FieldUpdateOperation"
+                            }
+                        },
+                        "description": "List of operations to perform on issue screen fields. Note that fields included in here cannot be included in `fields`."
+                    },
+                    "historyMetadata": {
+                        "description": "Additional issue history details.",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/HistoryMetadata"
+                            }
+                        ]
+                    },
+                    "properties": {
+                        "type": "array",
+                        "description": "Details of issue properties to be add or update.",
+                        "items": {
+                            "$ref": "#/components/schemas/EntityProperty"
+                        }
+                    }
+                },
+                "additionalProperties": true,
+                "description": "Details of an issue update request."
+            },
+            "IssueTransition": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "The ID of the issue transition. Required when specifying a transition to undertake."
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "The name of the issue transition.",
+                        "readOnly": true
+                    },
+                    "to": {
+                        "description": "Details of the issue status after the transition.",
+                        "readOnly": true,
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/StatusDetails"
+                            }
+                        ]
+                    },
+                    "hasScreen": {
+                        "type": "boolean",
+                        "description": "Whether there is a screen associated with the issue transition.",
+                        "readOnly": true
+                    },
+                    "isGlobal": {
+                        "type": "boolean",
+                        "description": "Whether the issue transition is global, that is, the transition is applied to issues regardless of their status.",
+                        "readOnly": true
+                    },
+                    "isInitial": {
+                        "type": "boolean",
+                        "description": "Whether this is the initial issue transition for the workflow.",
+                        "readOnly": true
+                    },
+                    "isAvailable": {
+                        "type": "boolean",
+                        "description": "Whether the transition is available to be performed.",
+                        "readOnly": true
+                    },
+                    "isConditional": {
+                        "type": "boolean",
+                        "description": "Whether the issue has to meet criteria before the issue transition is applied.",
+                        "readOnly": true
+                    },
+                    "fields": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "$ref": "#/components/schemas/FieldMetadata"
+                        },
+                        "description": "Details of the fields associated with the issue transition screen. Use this information to populate `fields` and `update` in a transition request.",
+                        "readOnly": true
+                    },
+                    "expand": {
+                        "type": "string",
+                        "description": "Expand options that include additional transition details in the response.",
+                        "readOnly": true
+                    },
+                    "looped": {
+                        "type": "boolean"
+                    }
+                },
+                "additionalProperties": true,
+                "description": "Details of an issue transition."
+            },
+            "StatusDetails": {
+                "type": "object",
+                "properties": {
+                    "self": {
+                        "type": "string",
+                        "description": "The URL of the status.",
+                        "readOnly": true
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "The description of the status.",
+                        "readOnly": true
+                    },
+                    "iconUrl": {
+                        "type": "string",
+                        "description": "The URL of the icon used to represent the status.",
+                        "readOnly": true
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "The name of the status.",
+                        "readOnly": true
+                    },
+                    "id": {
+                        "type": "string",
+                        "description": "The ID of the status.",
+                        "readOnly": true
+                    },
+                    "statusCategory": {
+                        "description": "The category assigned to the status.",
+                        "readOnly": true,
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/StatusCategory"
+                            }
+                        ]
+                    }
+                },
+                "additionalProperties": true,
+                "description": "A status."
+            },
+            "StatusCategory": {
+                "type": "object",
+                "properties": {
+                    "self": {
+                        "type": "string",
+                        "description": "The URL of the status category.",
+                        "readOnly": true
+                    },
+                    "id": {
+                        "type": "integer",
+                        "description": "The ID of the status category.",
+                        "format": "int64",
+                        "readOnly": true
+                    },
+                    "key": {
+                        "type": "string",
+                        "description": "The key of the status category.",
+                        "readOnly": true
+                    },
+                    "colorName": {
+                        "type": "string",
+                        "description": "The name of the color used to represent the status category.",
+                        "readOnly": true
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "The name of the status category.",
+                        "readOnly": true
+                    }
+                },
+                "additionalProperties": true,
+                "description": "A status category."
+            },
+            "FieldMetadata": {
+                "required": [
+                    "key",
+                    "name",
+                    "operations",
+                    "required",
+                    "schema"
+                ],
+                "type": "object",
+                "properties": {
+                    "required": {
+                        "type": "boolean",
+                        "description": "Whether the field is required.",
+                        "readOnly": true
+                    },
+                    "schema": {
+                        "description": "The data type of the field.",
+                        "readOnly": true,
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/JsonTypeBean"
+                            }
+                        ]
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "The name of the field.",
+                        "readOnly": true
+                    },
+                    "key": {
+                        "type": "string",
+                        "description": "The key of the field.",
+                        "readOnly": true
+                    },
+                    "autoCompleteUrl": {
+                        "type": "string",
+                        "description": "The URL that can be used to automatically complete the field.",
+                        "readOnly": true
+                    },
+                    "hasDefaultValue": {
+                        "type": "boolean",
+                        "description": "Whether the field has a default value.",
+                        "readOnly": true
+                    },
+                    "operations": {
+                        "type": "array",
+                        "description": "The list of operations that can be performed on the field.",
+                        "readOnly": true,
+                        "items": {
+                            "type": "string",
+                            "readOnly": true
+                        }
+                    },
+                    "allowedValues": {
+                        "type": "array",
+                        "description": "The list of values allowed in the field.",
+                        "readOnly": true,
+                        "items": {
+                            "readOnly": true
+                        }
+                    },
+                    "defaultValue": {
+                        "description": "The default value of the field.",
+                        "readOnly": true
+                    }
+                },
+                "additionalProperties": false,
+                "description": "The metadata describing an issue field.",
+                "xml": {
+                    "name": "availableField"
+                }
+            },
+            "JsonTypeBean": {
+                "required": [
+                    "type"
+                ],
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "description": "The data type of the field.",
+                        "readOnly": true
+                    },
+                    "items": {
+                        "type": "string",
+                        "description": "When the data type is an array, the name of the field items within the array.",
+                        "readOnly": true
+                    },
+                    "system": {
+                        "type": "string",
+                        "description": "If the field is a system field, the name of the field.",
+                        "readOnly": true
+                    },
+                    "custom": {
+                        "type": "string",
+                        "description": "If the field is a custom field, the URI of the field.",
+                        "readOnly": true
+                    },
+                    "customId": {
+                        "type": "integer",
+                        "description": "If the field is a custom field, the custom ID of the field.",
+                        "format": "int64",
+                        "readOnly": true
+                    },
+                    "configuration": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "readOnly": true
+                        },
+                        "description": "If the field is a custom field, the configuration of the field.",
+                        "readOnly": true
+                    }
+                },
+                "additionalProperties": false,
+                "description": "The schema of a field."
+            },
+            "FieldUpdateOperation": {
+                "type": "object",
+                "properties": {
+                    "add": {
+                        "description": "A map containing the name of a field and the value to add to it.",
+                        "example": {
+                            "labels": "Training",
+                            "issuelinks": {
+                                "id": 10001
+                            }
+                        }
+                    },
+                    "set": {
+                        "description": "A map containing the name of a field and the value to set in it.",
+                        "example": {
+                            "summary": "A new summary",
+                            "issuetype": {
+                                "id": 10010
+                            }
+                        }
+                    },
+                    "remove": {
+                        "description": "A map containing the name of a field and the value to removed from it.",
+                        "example": {
+                            "labels": "Training",
+                            "components": {
+                                "id": 10017
+                            }
+                        }
+                    },
+                    "edit": {
+                        "description": "A map containing the name of a field and the value to edit in it.",
+                        "example": {
+                            "timetracking": {
+                                "key": "JIRA"
+                            }
+                        }
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Details of an operation to perform on a field."
+            },
+            "HistoryMetadata": {
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "description": "The type of the history record."
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "The description of the history record."
+                    },
+                    "descriptionKey": {
+                        "type": "string",
+                        "description": "The description key of the history record."
+                    },
+                    "activityDescription": {
+                        "type": "string",
+                        "description": "The activity described in the history record."
+                    },
+                    "activityDescriptionKey": {
+                        "type": "string",
+                        "description": "The key of the activity described in the history record."
+                    },
+                    "emailDescription": {
+                        "type": "string",
+                        "description": "The description of the email address associated the history record."
+                    },
+                    "emailDescriptionKey": {
+                        "type": "string",
+                        "description": "The description key of the email address associated the history record."
+                    },
+                    "actor": {
+                        "description": "Details of the user whose action created the history record.",
+                        "allOf": [
+                            {
+                                "type": "object"
+                            }
+                        ]
+                    },
+                    "generator": {
+                        "description": "Details of the system that generated the history record.",
+                        "allOf": [
+                            {
+                                "type": "object"
+                            }
+                        ]
+                    },
+                    "cause": {
+                        "description": "Details of the cause that triggered the creation the history record.",
+                        "allOf": [
+                            {
+                                "type": "object"
+                            }
+                        ]
+                    },
+                    "extraData": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "description": "Additional arbitrary information about the history record."
+                    }
+                },
+                "additionalProperties": true,
+                "description": "Details of issue history metadata."
+            },
+            "EntityProperty": {
+                "type": "object",
+                "properties": {
+                    "key": {
+                        "type": "string",
+                        "description": "The key of the property. Required on create and update."
+                    },
+                    "value": {
+                        "description": "The value of the property. Required on create and update."
+                    }
+                },
+                "additionalProperties": false,
+                "description": "An entity property, for more information see [Entity properties](https://developer.atlassian.com/cloud/jira/platform/jira-entity-properties/)."
+            },
+            "ErrorCollection": {
+                "type": "object",
+                "properties": {
+                    "errorMessages": {
+                        "type": "array",
+                        "description": "The list of error messages produced by this operation. For example, \"input parameter 'key' must be provided\"",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "errors": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "description": "The list of errors by parameter returned by the operation. For example,\"projectKey\": \"Project keys must start with an uppercase letter, followed by one or more uppercase alphanumeric characters.\""
+                    },
+                    "status": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Error messages from an operation."
+            }
+        },
+        "securitySchemes": {
+            "basicAuth": {
+                "type": "http",
+                "description": "You can access this resource via basic auth.",
+                "scheme": "basic"
+            },
+            "OAuth2": {
+                "type": "oauth2",
+                "description": "OAuth2 scopes for Jira",
+                "flows": {
+                    "authorizationCode": {
+                        "authorizationUrl": "https://auth.atlassian.com/authorize",
+                        "tokenUrl": "https://auth.atlassian.com/oauth/token",
+                        "scopes": {
+                            "read:jira-user": "View user information in Jira that you have access to, including usernames, email addresses, and avatars.",
+                            "read:jira-work": "Read project and issue data. Search for issues and objects associated with issues (such as attachments and worklogs).",
+                            "write:jira-work": "Create and edit issues in Jira, post comments, create worklogs, and delete issues.",
+                            "manage:jira-project": "Create and edit project settings and create new project-level objects, for example, versions, components.",
+                            "manage:jira-configuration": "Configure Jira settings that require the Jira administrators permission, for example, create projects and custom fields, view workflows, manage issue link types.",
+                            "manage:jira-webhook": "Manage Jira webhooks. Enables an OAuth app to register and unregister dynamic webhooks in Jira. It also provides for fetching of registered webhooks."
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
